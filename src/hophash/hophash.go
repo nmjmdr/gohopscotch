@@ -3,6 +3,7 @@ package hophash
 import (
 	"errors"
 	"math"
+	//"sync"
 )
 
 type HashMap interface {
@@ -23,6 +24,7 @@ type entry struct {
 type item struct {
 	hashKey uint64	
 	entry *entry
+	//rwLock &sync.RWMutex{}
 }
 
 
@@ -125,11 +127,22 @@ func (h *Hopscotch) adjustTable(emptyIndex uint64,base uint64) (uint64,bool) {
 
 		// swap the emptyIndex with slot
 		hold := h.arr[slot].entry
-		h.arr[slot].entry = nil
-		h.arr[emptyIndex].entry = hold
+
+		
+
+		
+		// will have to do a atomic set
+		h.arr[emptyIndex].entry = hold		
+		// will have to do a atomic swap
 		h.arr[emptyIndex].hashKey = h.arr[slot].hashKey
+	
+		// mark the slot as available
+		// will have to do a atomic set
+		h.arr[slot].hashKey = 0
+		// will have to do a atomic set
+		h.arr[slot].entry = nil
+
 		emptyIndex = slot
-		h.arr[emptyIndex].hashKey = 0
 
 		// now check if the newly created empty slot is within the range of (H -1) of base
 		if emptyIndex <= baseRange {

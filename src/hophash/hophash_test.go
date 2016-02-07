@@ -40,7 +40,7 @@ func TestFitWithinRangeSameBase(t *testing.T) {
 	h.Add("c","c")
 	h.Add("d","d")
 
-	if h.arr[4].value != "d" {
+	if h.arr[4].entry.value != "d" {
 		t.Fail()
 	}
 
@@ -67,15 +67,15 @@ func TestFitWithinRangeDifBase(t *testing.T) {
 	h.Add("c","c")
 	h.Add("d","d")
 
-	if h.arr[4].value != "d" {
+	if h.arr[4].entry.value != "d" {
 		t.Fail()
 	}
 
-	if h.arr[3].value != "c" {
+	if h.arr[3].entry.value != "c" {
 		t.Fail()
 	}
 
-	if h.arr[1].value != "a" {
+	if h.arr[1].entry.value != "a" {
 		t.Fail()
 	}
 
@@ -107,11 +107,11 @@ func TestOutOfRange(t *testing.T) {
 	h.Add("e","e")
 
 
-	if h.arr[2].value != "e" {
+	if h.arr[2].entry.value != "e" {
 		t.Fail()
 	}
 
-	if h.arr[5].value != "b" {
+	if h.arr[5].entry.value != "b" {
 		t.Fail()
 	}
 
@@ -155,15 +155,15 @@ func TestOutOfRangeMultipleIterationsToFindEmptySlot(t *testing.T) {
 	// to place i(base=4) in slot at 7, and then first i to moved to 10 and g to be moved to 9
 	h.Add("j","j")
 
-	if h.arr[10].value != "i" {
+	if h.arr[10].entry.value != "i" {
 		t.Fail()
 	}
 
-	if h.arr[9].value != "g" {
+	if h.arr[9].entry.value != "g" {
 		t.Fail()
 	}
 
-	if h.arr[7].value != "j" {
+	if h.arr[7].entry.value != "j" {
 		t.Fail()
 	}
 
@@ -185,7 +185,7 @@ func TestAddGetHighLoadLimited(t *testing.T) {
 
 	var coder HashCoder
 	coder = new(fnvHash)
-	h := NewHophash(coder,2,uint64(16))
+	h := NewHophash(coder,2,8)
 
         for i:=1;i<15;i++ {	
 		str := strconv.Itoa(i)
@@ -216,7 +216,7 @@ func TestAddGetHighLoad(t *testing.T) {
 
 	var coder HashCoder
 	coder = new(fnvHash)
-	h := NewHophash(coder,32,uint64(math.Pow(2,28)))
+	h := NewHophash(coder,32,28)
 
 	for i:=0;i<(int(math.Pow(2,16))-2000);i++ {	
 		str := strconv.Itoa(i)
