@@ -3,7 +3,6 @@ package hophash
 import (
 	"errors"
 	"math"
-	//"sync"
 )
 
 type HashMap interface {
@@ -24,7 +23,6 @@ type entry struct {
 type item struct {
 	hashKey uint64	
 	entry *entry
-	//rwLock &sync.RWMutex{}
 }
 
 
@@ -129,19 +127,15 @@ func (h *Hopscotch) adjustTable(emptyIndex uint64,base uint64) (uint64,bool) {
 		hold := h.arr[slot].entry
 
 		
-
-		
-		// will have to do a atomic set
-		h.arr[emptyIndex].entry = hold		
-		// will have to do a atomic swap
-		h.arr[emptyIndex].hashKey = h.arr[slot].hashKey
 	
-		// mark the slot as available
-		// will have to do a atomic set
+		h.arr[emptyIndex].entry = hold		
+		h.arr[emptyIndex].hashKey = h.arr[slot].hashKey		
+		
+		// mark the slot as available		
 		h.arr[slot].hashKey = 0
 		// will have to do a atomic set
 		h.arr[slot].entry = nil
-
+		
 		emptyIndex = slot
 
 		// now check if the newly created empty slot is within the range of (H -1) of base
@@ -196,7 +190,7 @@ func (h *Hopscotch) getHopEnd(base uint64) uint64 {
 	return end
 }
 
-func (h *Hopscotch) indexOf(key string) (bool,uint64) {
+func (h *Hopscotch) indexOf(key string) (bool,string) {
 
 	hashKey := h.coder.GetCode(key)
 	//base := hashKey % h.size
@@ -206,19 +200,19 @@ func (h *Hopscotch) indexOf(key string) (bool,uint64) {
 
 	for i:=base;i<=end;i++ {
 		if h.arr[i].entry != nil &&  h.arr[i].hashKey == hashKey {
-			return true,i
+			return true,h.arr[i].entry.value
 		}
 	}	
-	return false,0
+	return false,""
 }
 
 
 func (h *Hopscotch) Get(key string) (string,bool) {
 
-	ok,index := h.indexOf(key)
+	ok,value := h.indexOf(key)
 	
 	if ok {
-		return h.arr[index].entry.value,true
+		return value,true
 	}
 	return "",false
 }
